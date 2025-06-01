@@ -2,6 +2,25 @@
 include("check_admin.php");
 include("../connection/connect.php");
 error_reporting(E_ALL);
+
+// Get unread notifications count
+$notification_count_query = "SELECT COUNT(*) as count FROM admin_notifications WHERE is_read = 0";
+$count_result = mysqli_query($db, $notification_count_query);
+$notification_count = mysqli_fetch_assoc($count_result)['count'];
+
+// Mark notifications as read if requested
+if(isset($_GET['mark_read'])) {
+    $mark_read_query = "UPDATE admin_notifications SET is_read = 1 WHERE id = ?";
+    $stmt = mysqli_prepare($db, $mark_read_query);
+    mysqli_stmt_bind_param($stmt, "i", $_GET['mark_read']);
+    mysqli_stmt_execute($stmt);
+    header("Location: dashboard.php");
+    exit();
+}
+
+// Get recent notifications
+$notifications_query = "SELECT * FROM admin_notifications ORDER BY created_at DESC LIMIT 10";
+$notifications_result = mysqli_query($db, $notifications_query);
 ?>
 
 <!DOCTYPE html>
@@ -19,6 +38,30 @@ error_reporting(E_ALL);
             <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
         <![endif]-->
         <script src="vendors/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+        <style>
+            .notification-badge {
+                background-color: #ff4444;
+                color: white;
+                padding: 2px 6px;
+                border-radius: 50%;
+                font-size: 12px;
+                margin-left: 5px;
+            }
+            .notification-item {
+                padding: 10px;
+                border-bottom: 1px solid #eee;
+            }
+            .notification-item:hover {
+                background-color: #f5f5f5;
+            }
+            .notification-unread {
+                background-color: #f0f8ff;
+            }
+            .notification-time {
+                color: #888;
+                font-size: 12px;
+            }
+        </style>
     </head>
     
     <body>
@@ -33,8 +76,11 @@ error_reporting(E_ALL);
                     <div class="nav-collapse collapse">
                         <ul class="nav pull-right">
                             <li class="dropdown">
-                                <a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"> <i class="icon-user"></i>Admin <i class="caret"></i>
-
+                                <a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"> <i class="icon-user"></i>Admin 
+                                    <?php if($notification_count > 0): ?>
+                                        <span class="notification-badge"><?php echo $notification_count; ?></span>
+                                    <?php endif; ?>
+                                    <i class="caret"></i>
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li>
@@ -65,7 +111,10 @@ error_reporting(E_ALL);
                 <div class="span3" id="sidebar">
                     <ul class="nav nav-list bs-docs-sidenav nav-collapse collapse">
                         <li class="active">
-                            <a href="dashboard.php"><i class="icon-chevron-right"></i> Dashboard</a>
+                            <a href="dashboard.php"><i class="icon-chevron-right"></i> Dashboard
+                                <?php if($notification_count > 0): ?>
+                                    <span class="notification-badge"><?php echo $notification_count; ?></span>
+                                <?php endif; ?></a>
                         </li>
                         <li>
                             <a href="recipes.php"><i class="icon-chevron-right"></i> Recipes</a>
@@ -103,6 +152,43 @@ error_reporting(E_ALL);
                             	</div>
                         	</div>
                     	</div>
+                    <div class="row-fluid">
+                        <!-- block -->
+                        <div class="block">
+                            <div class="navbar navbar-inner block-header">
+                                <div class="muted pull-left">Recent Notifications</div>
+                            </div>
+                            <div class="block-content collapse in">
+                                <div class="notifications-container">
+                                    <?php while($notification = mysqli_fetch_assoc($notifications_result)): ?>
+                                        <div class="notification-item <?php echo $notification['is_read'] ? '' : 'notification-unread'; ?>">
+                                            <div class="row-fluid">
+                                                <div class="span10">
+                                                    <strong><?php echo htmlspecialchars($notification['type']); ?>:</strong>
+                                                    <?php echo htmlspecialchars($notification['message']); ?>
+                                                    <div class="notification-time">
+                                                        <?php echo date('F j, Y, g:i a', strtotime($notification['created_at'])); ?>
+                                                    </div>
+                                                </div>
+                                                <?php if(!$notification['is_read']): ?>
+                                                    <div class="span2">
+                                                        <a href="?mark_read=<?php echo $notification['id']; ?>" 
+                                                           class="btn btn-mini btn-info">Mark as Read</a>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    <?php endwhile; ?>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /block -->
+                    </div>
+                   
+                        
+                 
+                       
+                      
                     <div class="row-fluid">
                         <!-- block -->
                         <div class="block">
