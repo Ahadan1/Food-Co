@@ -6,9 +6,9 @@ if(isset($_POST['submit']))
 	$fname=$_POST['fname'];
 	$lname=$_POST['lname'];
 	$email=$_POST['email'];	
-	$password=$_POST['password'];
+	$password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 	$sql = "INSERT INTO signup(firstname,lastname,email,password) VALUES('$fname','$lname','$email','$password')";
-	 $query=mysqli_query($db, $sql);
+	$query = mysqli_query($db, $sql);
 	if($query)
 	{
 		header('location:signup_success.php');
@@ -86,7 +86,7 @@ if(isset($_POST['submit']))
 						    </div>
 						    <div>
 						     	<span><label>PASSWORD</label></span>
-						    	<span><input type="text" value="" name='password'></span>
+						    	<span><input type="password" value="" name='password'></span>
 						    </div>
 						    
 						   <div>

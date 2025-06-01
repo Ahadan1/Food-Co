@@ -38,14 +38,14 @@
 							<ul>
 								<li>
 									<h3>Video masakan</h3>
-									<a href="https://youtu.be/8eBjIbu4nOM?si=8zpU53xovDn8B04v"><img src="images/video1.jpg" alt="Image"></a>
+									<iframe width="560" height="315" src="https://www.youtube.com/embed/8eBjIbu4nOM" frameborder="0" allowfullscreen></iframe>
 									<p>
 										ini ada link video masakan yang unrelated sama yang ada di gambar soalnya gak tau gambar makanan apa itu #alltooreal
 									</p>
 								</li>
 								<li>
 									<h3>Video masakan satu lagi</h3>
-									<a href="https://youtu.be/u_OrS5m7oMs?si=nYpLO8BwNgSUHFRO"><img src="images/video2.jpg" alt="Image"></a>
+									<iframe width="560" height="315" src="https://www.youtube.com/embed/u_OrS5m7oMs" frameborder="0" allowfullscreen></iframe>
 									<p>
 										ini ada link video masakan yang unrelated sama yang ada di gambar soalnya gak tau gambar makanan apa itu #alltooreal
 									</p>
